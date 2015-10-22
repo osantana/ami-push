@@ -2,7 +2,7 @@
 
 
 def main():
-    print("Hello Concord!")
+    print("Hello AMI Push!")
 
 if __name__ == "__main__":
     main()
