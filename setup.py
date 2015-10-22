@@ -43,7 +43,7 @@ setup(
     version="0.1.0",
     url="https://github.com/osantana/ami-push",
     author="Osvaldo Santana Neto",
-    author_email="concord@osantana.me",
+    author_email="amipush@osantana.me",
     description="Daemon that makes a bridge to listen Asterisk Management Interface (AMI) Events and send HTTP requests",
     long_description=open('README.rst').read(),
     packages=find_packages(),

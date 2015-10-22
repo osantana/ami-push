@@ -7,12 +7,12 @@ import configparser
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("-c", "--config", default="concord.cfg", metavar="FILENAME")
+    parser.add_argument("-c", "--config", default="ami-push.cfg", metavar="FILENAME")
 
     arguments = parser.parse_args()
 
     config = configparser.ConfigParser()
-    config.read([arguments.config, os.path.expanduser("~/.concord.cfg"), "/etc/concord.cfg"])
+    config.read([arguments.config, os.path.expanduser("~/.ami-push.cfg"), "/etc/ami-push.cfg"])
 
     print(config.sections())
 
