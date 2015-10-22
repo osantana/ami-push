@@ -39,9 +39,9 @@ class VersionCommand(Command):
 
 
 setup(
-    name="concord",
+    name="ami-push",
     version="0.1.0",
-    url="https://github.com/osantana/concord",
+    url="https://github.com/osantana/ami-push",
     author="Osvaldo Santana Neto",
     author_email="concord@osantana.me",
     description="Daemon that makes a bridge to listen Asterisk Management Interface (AMI) Events and send HTTP requests",
@@ -50,7 +50,7 @@ setup(
     install_requires=get_requirements("requirements.txt"),
     entry_points={
         'console_scripts': [
-            "concord = concord.cli:main"
+            "amipush = ami_push.cli:main"
         ]
     },
     classifiers=[
