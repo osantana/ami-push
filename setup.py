@@ -1,9 +1,11 @@
 # coding: utf-8
 
 import os
+import sys
 import re
 
 from setuptools import setup, find_packages, Command
+from setuptools.command.test import test as TestCommand
 
 
 def get_requirements(filename):
@@ -38,6 +40,27 @@ class VersionCommand(Command):
         print(get_version("CHANGES.rst"))
 
 
+# noinspection PyAttributeOutsideInit
+class PyTestCommand(TestCommand):
+    user_options = [('pytest-args=', 'a', "Arguments to pass to py.test")]
+
+    def _test_args(self):
+        return []
+
+    def initialize_options(self):
+        super().initialize_options()
+        self.pytest_args = []
+
+    def finalize_options(self):
+        super().finalize_options()
+        self.test_suite = True
+
+    def run_tests(self):
+        import pytest
+        errno = pytest.main(self.pytest_args)
+        sys.exit(errno)
+
+
 setup(
     name="ami-push",
     version="0.1.0",
@@ -60,6 +83,6 @@ setup(
         'Programming Language :: Python :: 3.4',
         'Programming Language :: Python :: 3.5',
     ],
-    cmdclass={'version': VersionCommand},
-    test_suite='nose.collector'
+    tests_require=['pytest'],
+    cmdclass={'version': VersionCommand, 'test': PyTestCommand},
 )

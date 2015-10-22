@@ -1,5 +1,6 @@
 *.py[cod]
 *.egg-info
 .coverage
+.cache
 build
 dist
