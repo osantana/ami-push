@@ -44,7 +44,7 @@ setup(
     url="https://github.com/osantana/concord",
     author="Osvaldo Santana Neto",
     author_email="concord@osantana.me",
-    description="Bridge to listen Asterisk Management Interface (AMI) Events and send HTTP requests",
+    description="Daemon that makes a bridge to listen Asterisk Management Interface (AMI) Events and send HTTP requests",
     long_description=open('README.rst').read(),
     packages=find_packages(),
     install_requires=get_requirements("requirements.txt"),
