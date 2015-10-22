@@ -1,5 +1,5 @@
-Concord
-=======
+ami-push
+========
 
 Daemon that makes a bridge to listen Asterisk Management Interface (AMI) Events
 and send HTTP requests.
@@ -16,4 +16,4 @@ Installation
 
 .. code-block:: sh
 
-    pip install concord
+    pip install ami-push
