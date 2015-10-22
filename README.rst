@@ -14,7 +14,7 @@ the Great Divide`_  book.
 Requirements
 ------------
 
-  * Python 3.4+
+* Python 3.4+
 
 
 Installation
