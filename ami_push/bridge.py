@@ -2,8 +2,12 @@
 
 
 import asyncio
+import logging
 
 from panoramisk import Manager
+
+
+logger = logging.getLogger(__name__)
 
 
 class Bridge:
@@ -14,19 +18,17 @@ class Bridge:
         self.loop = asyncio.get_event_loop()
 
         self.manager = Manager(loop=self.loop, **options)
-        self.manager.register_event("VarSet.*", self.handle_events)
+        self.manager.register_event("*", self.handle_events)
 
-    def handle_events(self, event, manager):
-        print(event, manager)
-
-    def close(self):
-        self.manager.close()
-        self.loop.close()
+    def handle_events(self, manager, event):
+        print(event)
 
     def run(self):
         self.manager.connect()
 
         try:
             self.loop.run_forever()
+        except KeyboardInterrupt:
+            logger.info("Interrupted... Exiting!")
         finally:
-            self.close()
+            self.loop.close()
