@@ -2,6 +2,7 @@
 *.egg-info
 .coverage
 .cache
+.venv
 build
 dist
 ami-push.cfg
