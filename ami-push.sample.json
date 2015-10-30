@@ -1,0 +1,27 @@
+{
+  "manager": {
+    "host": "localhost",
+    "port": "5038",
+    "username": "manager_account",
+    "secret": "sekret",
+    "max_queues": 100,
+    "max_queue_size": 100
+  },
+  "actions": [
+    {
+      "action": "enqueue",
+      "filter": {
+        "event": "varset",
+        "variable": "call_id"
+      }
+    },
+    {
+      "action": "push",
+      "url": "http://username@passwd@localhost:8080/agent/notify",
+      "filter": {
+        "event": "agentcalled",
+        "queue": "standard"
+      }
+    }
+  ]
+}

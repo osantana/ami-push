@@ -2,44 +2,55 @@
 
 import os
 import argparse
-import configparser
+import json
 
 import sys
 
 from ami_push.bridge import Bridge
 
 
+def _load_config(filename):
+    filenames = ("/etc/ami-push.json", os.path.expanduser("~/.ami-push.json"), filename)
+    for filename in filenames:
+        try:
+            with open(filename) as file_:
+                return json.load(file_)
+        except OSError:
+            continue
+    else:
+        raise OSError("Cannot open configuration files: {}".format(", ".join(filenames)))
+
+
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("-c", "--config", default="ami-push.cfg", metavar="FILENAME")
-
+    parser.add_argument("-c", "--config", default="ami-push.json", metavar="FILENAME")
     arguments = parser.parse_args()
 
-    config = configparser.ConfigParser()
-    files = config.read([arguments.config, os.path.expanduser("~/.ami-push.cfg"), "/etc/ami-push.cfg"])
-    file_list = ", ".join(files)
-
-    if not config.has_section("manager"):
-        parser.error("Missing [manager] section in configuration file: {}".format(file_list))
+    try:
+        config = _load_config(arguments.config)
+    except OSError as ex:
+        parser.error(str(ex))
         sys.exit(1)
 
-    options = dict(config.items("manager"))
-
-    if "username" not in options:
-        parser.error("Missing username in {}".format(", ".join(files)))
+    if "manager" not in config:
+        parser.error('Missing "manager" section in configuration.')
         sys.exit(1)
 
-    if "secret" not in options:
-        parser.error("Missing secret in {}".format(", ".join(files)))
+    if "username" not in config["manager"]:
+        parser.error("Missing username configuration")
         sys.exit(1)
 
-    # remove unused and invalid options
-    options.pop("loop", None)
-    options.pop("events", None)
-    options.pop("connection_class", None)
+    if "secret" not in config["manager"]:
+        parser.error("Missing secret configuration")
+        sys.exit(1)
 
-    bridge = Bridge(**options)
-    bridge.run()
+    bridge = Bridge(config["manager"], config["rules"])
+
+    try:
+        bridge.run()
+    except OSError as ex:
+        parser.error(str(ex))
+        sys.exit(2)
 
 
 if __name__ == "__main__":
