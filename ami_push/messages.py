@@ -20,6 +20,4 @@ class MessageWrapper:
 
     @property
     def keyid(self):
-        if "." in self.uniqueid:
-            return self.uniqueid.split(".")[0]
-        return self.uniqueid
+        return self.uniqueid.split(".")[0]

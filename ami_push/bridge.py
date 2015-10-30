@@ -6,18 +6,12 @@ import logging
 
 from panoramisk import Manager
 
+from .handlers import Handler
 from .message import MessageWrapper
 from .utils import LRUCacheDict
 
 DEFAULT_MAX_QUEUES = 100
 DEFAULT_MAX_QUEUE_SIZE = 100
-
-
-class Handler:
-    def __init__(self, action, filters, url=""):
-        self.action = action
-        self.filters = filters
-        self.url = url
 
 
 class Controller:
@@ -31,10 +25,11 @@ class Controller:
 
     def load_handlers(self, handler_configurations):
         for handler_config in handler_configurations:
-            self.handlers.append(Handler(**handler_config))
+            self.handlers.append(Handler.create(**handler_config))
 
     def handle(self, message):
-        pass
+        for handler in self.handlers:
+            handler.handle(self, message)
 
 
 class Bridge:

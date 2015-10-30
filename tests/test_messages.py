@@ -6,7 +6,7 @@ import json
 from panoramisk import utils
 from panoramisk.message import Message
 
-from message import MessageWrapper
+from messages import MessageWrapper
 
 
 MESSAGE = """
