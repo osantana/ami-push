@@ -44,7 +44,7 @@ def main():
         parser.error("Missing secret configuration")
         sys.exit(1)
 
-    bridge = Bridge(config["manager"], config["rules"])
+    bridge = Bridge(config["manager"], config["handlers"])
 
     try:
         bridge.run()

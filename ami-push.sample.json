@@ -7,7 +7,7 @@
     "max_queues": 100,
     "max_queue_size": 100
   },
-  "actions": [
+  "handlers": [
     {
       "action": "enqueue",
       "filter": {
