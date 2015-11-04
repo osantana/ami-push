@@ -1,0 +1,14 @@
+{
+  "manager": {
+    "username": "admin",
+    "secret": "secret"
+  },
+  "filters": {
+    "agentcalled": {
+      "event": "AgentCalled"
+    }
+  },
+  "handlers": [
+    {"action": "enqueue", "filter": "varset-callid"}
+  ]
+}

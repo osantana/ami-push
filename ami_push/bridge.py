@@ -6,40 +6,18 @@ import logging
 
 from panoramisk import Manager
 
-from .handlers import Handler
-from .message import MessageWrapper
-from .utils import LRUCacheDict
-
-DEFAULT_MAX_QUEUES = 100
-DEFAULT_MAX_QUEUE_SIZE = 100
-
-
-class Controller:
-    def __init__(self, loop=None, max_queues=DEFAULT_MAX_QUEUES, max_queue_size=DEFAULT_MAX_QUEUE_SIZE):
-        if loop is None:
-            loop = asyncio.get_event_loop()
-        self.loop = loop
-        self.max_queue_size = max_queue_size
-        self.queues = LRUCacheDict(max_queues)
-        self.handlers = []
-
-    def load_handlers(self, handler_configurations):
-        for handler_config in handler_configurations:
-            self.handlers.append(Handler.create(**handler_config))
-
-    def handle(self, message):
-        for handler in self.handlers:
-            handler.handle(self, message)
+from .controller import Controller, DEFAULT_MAX_QUEUES, DEFAULT_MAX_QUEUE_SIZE
+from .messages import MessageWrapper
 
 
 class Bridge:
-    def __init__(self, options, handlers):
+    def __init__(self, options, filters, handlers):
         self.loop = asyncio.get_event_loop()
 
         max_queues = options.pop("max_size", DEFAULT_MAX_QUEUES)
         max_queue_size = options.pop("max_queue_size", DEFAULT_MAX_QUEUE_SIZE)
         self.controller = Controller(self.loop, max_queues, max_queue_size)
-        self.controller.load_handlers(handlers)
+        self.controller.load_configs(filters, handlers)
 
         options.pop("loop", None)  # discard invalid argument
         self.manager = Manager(loop=self.loop, **options)

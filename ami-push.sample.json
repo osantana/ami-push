@@ -7,21 +7,17 @@
     "max_queues": 100,
     "max_queue_size": 100
   },
-  "handlers": [
-    {
-      "action": "enqueue",
-      "filter": {
-        "event": "varset",
-        "variable": "call_id"
-      }
+  "filters": {
+    "varset-callid": {
+      "event": "VarSet",
+      "variable": "CALL_ID"
     },
-    {
-      "action": "push",
-      "url": "http://username@passwd@localhost:8080/agent/notify",
-      "filter": {
-        "event": "agentcalled",
-        "queue": "standard"
-      }
+    "agentcalled": {
+      "event": "AgentCalled"
     }
+  },
+  "handlers": [
+    {"action": "enqueue", "filter": "varset-callid"},
+    {"action": "push", "filter": "varset-callid", "url": "http://user:passwd@example.com/event/"}
   ]
 }

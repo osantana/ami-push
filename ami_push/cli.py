@@ -1,57 +1,83 @@
 # coding: utf-8
 
-import os
 import argparse
 import json
-
+import os
 import sys
 
 from ami_push.bridge import Bridge
 
 
-def _load_config(filename):
-    filenames = ("/etc/ami-push.json", os.path.expanduser("~/.ami-push.json"), filename)
+class ConfigurationError(Exception):
+    pass
+
+
+def load_config(filename):
+    config = None
+    filenames = (filename, "/etc/ami-push.json", os.path.expanduser("~/.ami-push.json"))
     for filename in filenames:
         try:
             with open(filename) as file_:
-                return json.load(file_)
+                config = json.load(file_)
         except OSError:
             continue
-    else:
-        raise OSError("Cannot open configuration files: {}".format(", ".join(filenames)))
+
+    if config is None:
+        raise ConfigurationError("Cannot open configuration files: {}".format(", ".join(filenames)))
+
+    return validate_config(config)
 
 
-def main():
-    parser = argparse.ArgumentParser()
-    parser.add_argument("-c", "--config", default="ami-push.json", metavar="FILENAME")
-    arguments = parser.parse_args()
-
-    try:
-        config = _load_config(arguments.config)
-    except OSError as ex:
-        parser.error(str(ex))
-        sys.exit(1)
-
+def validate_config(config):
     if "manager" not in config:
-        parser.error('Missing "manager" section in configuration.')
-        sys.exit(1)
+        raise ConfigurationError('Missing "manager" section in configuration.')
 
     if "username" not in config["manager"]:
-        parser.error("Missing username configuration")
-        sys.exit(1)
+        raise ConfigurationError("Missing username configuration")
 
     if "secret" not in config["manager"]:
-        parser.error("Missing secret configuration")
-        sys.exit(1)
+        raise ConfigurationError("Missing secret configuration")
 
-    bridge = Bridge(config["manager"], config["handlers"])
+    if "filters" not in config:
+        raise ConfigurationError('Missing "filters" section in configuration.')
+
+    if not config["filters"]:
+        raise ConfigurationError('No filter specified.')
+
+    if not isinstance(config["filters"], dict):
+        raise ConfigurationError("Invalid filters specification.")
+
+    if "handlers" not in config:
+        raise ConfigurationError('Missing "handlers" section in configuration.')
+
+    if not config["handlers"]:
+        raise ConfigurationError('No handler specified.')
+
+    if not isinstance(config["handlers"], list):
+        raise ConfigurationError("Handlers must be a list.")
+
+    return config
+
+
+def main(args=None):
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-c", "--config", default="ami-push.json", metavar="FILENAME")
+    arguments = parser.parse_args(args)
+
+    try:
+        config = load_config(arguments.config)
+    except ConfigurationError as ex:
+        parser.error(str(ex))
+        return 1
+
+    bridge = Bridge(config["manager"], config["filters"], config["handlers"])
 
     try:
         bridge.run()
     except OSError as ex:
         parser.error(str(ex))
-        sys.exit(2)
+        return 2
 
 
 if __name__ == "__main__":
-    main()
+    sys.exit(int(main()))
