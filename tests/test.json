@@ -8,7 +8,7 @@
       "event": "AgentCalled"
     }
   },
-  "handlers": [
-    {"action": "enqueue", "filter": "varset-callid"}
+  "push": [
+    {"filter": "agentcalled", "url": "http://foo:bar@baz.com/"}
   ]
 }

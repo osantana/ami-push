@@ -39,9 +39,18 @@ def test_message_from_message():
 def test_message_from_text():
     wrapper = MessageWrapper(MESSAGE)
     assert wrapper.uniqueid == "1444884710.0"
+
+    assert "language" in wrapper
     assert wrapper.language == "en"
+    assert wrapper["language"] == "en"
+
+    assert "variable" in wrapper
     assert wrapper.variable == "CALL_ID"
+    assert wrapper["variable"] == "CALL_ID"
+
+    assert "value" in wrapper
     assert wrapper.value == "5aeb879d-753e-48f2-92da-22ae0653cee8"
+    assert wrapper["value"] == "5aeb879d-753e-48f2-92da-22ae0653cee8"
 
 
 def test_message_to_json():

@@ -47,14 +47,14 @@ def validate_config(config):
     if not isinstance(config["filters"], dict):
         raise ConfigurationError("Invalid filters specification.")
 
-    if "handlers" not in config:
-        raise ConfigurationError('Missing "handlers" section in configuration.')
+    if "push" not in config:
+        raise ConfigurationError('Missing "push" section in configuration.')
 
-    if not config["handlers"]:
-        raise ConfigurationError('No handler specified.')
+    if not config["push"]:
+        raise ConfigurationError('No push configuration specified.')
 
-    if not isinstance(config["handlers"], list):
-        raise ConfigurationError("Handlers must be a list.")
+    if not isinstance(config["push"], list):
+        raise ConfigurationError("Push configurations must be in a list.")
 
     return config
 
@@ -70,7 +70,7 @@ def main(args=None):
         parser.error(str(ex))
         return 1
 
-    bridge = Bridge(config["manager"], config["filters"], config["handlers"])
+    bridge = Bridge(config["manager"], config["filters"], config["push"])
 
     try:
         bridge.run()

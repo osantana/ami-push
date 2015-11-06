@@ -15,6 +15,12 @@ class MessageWrapper:
     def __getattr__(self, item):
         return getattr(self.message, item)
 
+    def __contains__(self, item):
+        return item in self.message
+
+    def __getitem__(self, item):
+        return self.message[item]
+
     def json(self):
         return json.dumps(dict(self.message))
 

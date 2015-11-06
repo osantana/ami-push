@@ -5,7 +5,7 @@ import os
 
 import pytest
 
-from cli import validate_config, ConfigurationError, load_config, main
+from cli import validate_config, ConfigurationError, load_config
 
 LOCAL = os.path.dirname(__file__)
 
@@ -18,7 +18,7 @@ def config_ok():
             "secret": "sekret",
         },
         "filters": {"filter": {}},
-        "handlers": [{"action": "enqueue", "filter": "filter"}],
+        "push": [{"url": "http://foo:bar@baz.com/", "filter": "filter"}],
     }
 
 
@@ -38,8 +38,8 @@ def test_invalid_config_missing_filters(config_ok):
         validate_config(config_ok)
 
 
-def test_invalid_config_missing_handlers(config_ok):
-    config_ok.pop("handlers")
+def test_invalid_config_missing_pushers(config_ok):
+    config_ok.pop("push")
     with pytest.raises(ConfigurationError):
         validate_config(config_ok)
 
@@ -62,8 +62,8 @@ def test_invalid_config_empty_filters(config_ok):
         validate_config(config_ok)
 
 
-def test_invalid_config_empty_handlers(config_ok):
-    config_ok["handlers"] = {}
+def test_invalid_config_empty_pushers(config_ok):
+    config_ok["push"] = {}
     with pytest.raises(ConfigurationError):
         validate_config(config_ok)
 
@@ -74,8 +74,8 @@ def test_invalid_config_invalid_filters(config_ok):
         validate_config(config_ok)
 
 
-def test_invalid_config_invalid_handlers(config_ok):
-    config_ok["handlers"] = {"invalid"}
+def test_invalid_config_invalid_pushers(config_ok):
+    config_ok["push"] = {"invalid"}
     with pytest.raises(ConfigurationError):
         validate_config(config_ok)
 

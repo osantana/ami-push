@@ -16,8 +16,7 @@
       "event": "AgentCalled"
     }
   },
-  "handlers": [
-    {"action": "enqueue", "filter": "varset-callid"},
-    {"action": "push", "filter": "varset-callid", "url": "http://user:passwd@example.com/event/"}
+  "push": [
+    {"filter": "agentcalled", "url": "http://user:passwd@example.com/event/"}
   ]
 }

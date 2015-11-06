@@ -1,10 +1,11 @@
 # coding: utf-8
+
+
 import asyncio
 
-from filters import Filter
-from handlers import Handler
-from utils import LRUCacheDict
-
+from ami_push.filters import Filter
+from ami_push.pusher import Pusher
+from ami_push.utils import LRUCacheDict
 
 DEFAULT_MAX_QUEUES = 100
 DEFAULT_MAX_QUEUE_SIZE = 100
@@ -18,15 +19,33 @@ class Controller:
         self.max_queue_size = max_queue_size
         self.queues = LRUCacheDict(max_queues)
         self.filters = {}
-        self.handlers = []
+        self.pushers = []
 
-    def load_configs(self, filters, handlers):
+    def load_configs(self, filters, push_configs):
         for name, filter_ in filters.items():
             self.filters[name] = Filter(**filter_)
 
-        for handler in handlers:
-            self.handlers.append(Handler(**handler))
+        for push_config in push_configs:
+            self.pushers.append(Pusher(**push_config))
+
+    def _enqueue(self, message):
+        queue = self.queues.setdefault(message.keyid, asyncio.Queue(maxsize=self.max_queue_size))
+        try:
+            queue.put_nowait(message)
+            return queue
+        except asyncio.QueueFull:
+            # TODO: log discarded info
+            return queue
 
     def handle(self, message):
-        for handler in self.handlers:
-            handler.handle(self, message)
+        for name, filter_ in self.filters.items():
+            if not filter_.match(message):
+                continue
+
+            queue = self._enqueue(message)
+
+            for pusher in self.pushers:
+                if name not in pusher.filter:
+                    continue
+                yield from pusher.push(queue)
+                self.queues.pop(message.keyid)
