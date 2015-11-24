@@ -22,7 +22,7 @@ class MessageWrapper:
         return self.message[item]
 
     def json(self):
-        return json.dumps(dict(self.message))
+        return dict(self.message)
 
     @property
     def keyid(self):
